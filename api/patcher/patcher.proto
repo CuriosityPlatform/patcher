@@ -1,0 +1,22 @@
+syntax = "proto3";
+package patcher;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = ".;patcher";
+
+service PatcherService {
+    rpc AddPatch (AddPatchRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/patch"
+            body: "*"
+        };
+    }
+}
+
+message AddPatchRequest {
+    string author = 1;
+    string device = 2;
+    string patchContent = 3;
+}
