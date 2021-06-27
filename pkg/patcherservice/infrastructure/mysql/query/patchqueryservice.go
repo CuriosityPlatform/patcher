@@ -45,7 +45,7 @@ func (service *patchQueryService) GetPatch(id app.PatchID) (app.Patch, error) {
 		Applied:   patch.Applied,
 		Author:    app.PatchAuthor(patch.Author),
 		Device:    app.Device(patch.Device),
-		CreatedAt: nil,
+		CreatedAt: &patch.CreatedAt,
 	}, err
 }
 
@@ -68,7 +68,7 @@ func (service *patchQueryService) GetPatchContent(id app.PatchID) (app.PatchCont
 }
 
 func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app.Patch, error) {
-	selectSQL := `SELECT * FROM patch`
+	selectSQL := `SELECT patch_id, applied, author, device, created_at FROM patch`
 
 	conditions, args, err := getWhereConditionsBySpec(spec)
 	if err != nil {
@@ -97,7 +97,7 @@ func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app
 			Applied:   patch.Applied,
 			Author:    app.PatchAuthor(patch.Author),
 			Device:    app.Device(patch.Device),
-			CreatedAt: nil,
+			CreatedAt: &patch.CreatedAt,
 		})
 	}
 

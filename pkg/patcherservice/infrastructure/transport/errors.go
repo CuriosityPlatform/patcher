@@ -11,6 +11,7 @@ import (
 func translateError(err error) error {
 	switch errors.Cause(err) {
 	case app.ErrPatchAlreadyApplied:
+	case app.ErrPatchCantAddPatchWitEmptyContent:
 		return status.Error(codes.InvalidArgument, err.Error())
 	case app.ErrPatchNotFound:
 		return status.Error(codes.NotFound, err.Error())

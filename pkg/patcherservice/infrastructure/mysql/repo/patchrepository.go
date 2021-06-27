@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/CuriosityMusicStreaming/ComponentsPool/pkg/infrastructure/mysql"
@@ -42,15 +43,15 @@ func (repo *patchRepository) Find(id app.PatchID) (app.Patch, error) {
 		Applied:   patch.Applied,
 		Author:    app.PatchAuthor(patch.Author),
 		Device:    app.Device(patch.Device),
-		CreatedAt: nil,
+		CreatedAt: &patch.CreatedAt,
 	}, err
 }
 
 func (repo *patchRepository) Store(patch app.Patch) error {
-	const insertSQL = `
+	insertSQL := `
 		INSERT INTO patch (patch_id, applied, content, author, device, created_at) VALUES(?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY 
-		UPDATE patch_id=VALUES(patch_id), applied=VALUES(applied), content=VALUES(content), author=VALUES(author), device=VALUES(device), created_at=VALUES(created_at)
+		UPDATE patch_id=VALUES(patch_id), applied=VALUES(applied), %s, author=VALUES(author), device=VALUES(device), created_at=VALUES(created_at)
 	`
 
 	if patch.CreatedAt == nil {
@@ -63,15 +64,32 @@ func (repo *patchRepository) Store(patch app.Patch) error {
 		return errors.WithStack(err)
 	}
 
-	_, err = repo.client.Exec(
-		insertSQL,
-		binaryUUID,
-		patch.Applied,
-		patch.Content,
-		patch.Author,
-		patch.Device,
-		patch.CreatedAt,
-	)
+	if patch.Content != nil {
+		insertSQL = fmt.Sprintf(insertSQL, "content=VALUES(content)")
+
+		_, err = repo.client.Exec(
+			insertSQL,
+			binaryUUID,
+			patch.Applied,
+			patch.Content,
+			patch.Author,
+			patch.Device,
+			patch.CreatedAt,
+		)
+	} else {
+		insertSQL = fmt.Sprintf(insertSQL, "content=content")
+
+		_, err = repo.client.Exec(
+			insertSQL,
+			binaryUUID,
+			patch.Applied,
+			"",
+			patch.Author,
+			patch.Device,
+			patch.CreatedAt,
+		)
+	}
+
 	if err != nil {
 		return err
 	}

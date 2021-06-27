@@ -13,10 +13,80 @@ service PatcherService {
             body: "*"
         };
     }
+
+    rpc ApplyPatch (ApplyPatchRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/api/v1/patch/apply"
+            body: "*"
+        };
+    }
+
+    rpc GetPatch (GetPatchRequest) returns (GetPatchResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/patch/{patchID}"
+        };
+    }
+
+    rpc GetPatchContent (GetPatchContentRequest) returns (GetPatchContentResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/patch/{patchID}/content"
+        };
+    }
+
+    rpc QueryPatches (QueryPatchesRequest) returns (QueryPatchesResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/patches"
+            body: "*"
+        };
+    }
 }
 
 message AddPatchRequest {
     string author = 1;
     string device = 2;
     string patchContent = 3;
+}
+
+message ApplyPatchRequest {
+    string patchID = 1;
+}
+
+message GetPatchRequest {
+    string patchID = 1;
+}
+
+message GetPatchResponse {
+    string id = 1;
+    bool applied = 2;
+    string author = 3;
+    string device = 4;
+    int64 createdAt = 5;
+}
+
+message GetPatchContentRequest {
+    string patchID = 1;
+}
+
+message GetPatchContentResponse {
+    string content = 1;
+}
+
+message QueryPatchesRequest {
+    repeated string patchIDs = 1;
+    repeated string authors = 2;
+    repeated string devices = 3;
+    int64 after = 4;
+    int64 before = 5;
+}
+
+message QueryPatchesResponse {
+    repeated Patch patches = 1;
+}
+
+message Patch {
+    string id = 1;
+    bool applied = 2;
+    string author = 3;
+    string device = 4;
+    int64 createdAt = 5;
 }

@@ -12,8 +12,9 @@ const (
 )
 
 var (
-	ErrPatchAlreadyApplied = errors.New("cannot apply applied patch")
-	ErrPatchNotFound       = errors.New("patch not found")
+	ErrPatchAlreadyApplied              = errors.New("cannot apply applied patch")
+	ErrPatchNotFound                    = errors.New("patch not found")
+	ErrPatchCantAddPatchWitEmptyContent = errors.New("cannot add patch with empty content")
 )
 
 type PatchService interface {
@@ -30,6 +31,10 @@ type patchService struct {
 }
 
 func (service *patchService) AddPatch(author, device string, content []byte) error {
+	if len(content) == 0 {
+		return ErrPatchCantAddPatchWitEmptyContent
+	}
+
 	return service.executeInUnitOfWork(fmt.Sprintf(patchServiceLock, author), func(provider RepositoryProvider) error {
 		repo := provider.PatchRepository()
 		return repo.Store(Patch{

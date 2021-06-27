@@ -18,7 +18,7 @@ ENV_FILE_PATH=$4
 APP_VERSION=$(git rev-parse HEAD)
 
 #import params from .env
-export $(egrep -v '^#' $ENV_FILE_PATH | xargs)
+#export $(egrep -v '^#' $ENV_FILE_PATH | xargs)
 
 GO_SRC_FILES=$(find "$CMD_PACKAGE_DIR" -name "*.go" | tr "\n" " ")
 
