@@ -42,9 +42,10 @@ service PatcherService {
 }
 
 message AddPatchRequest {
-    string author = 1;
-    string device = 2;
-    string patchContent = 3;
+    string project = 1;
+    string author = 2;
+    string device = 3;
+    string patchContent = 4;
 }
 
 message ApplyPatchRequest {
@@ -57,10 +58,11 @@ message GetPatchRequest {
 
 message GetPatchResponse {
     string id = 1;
-    bool applied = 2;
-    string author = 3;
-    string device = 4;
-    int64 createdAt = 5;
+    string project = 2;
+    bool applied = 3;
+    string author = 4;
+    string device = 5;
+    int64 createdAt = 6;
 }
 
 message GetPatchContentRequest {
@@ -73,10 +75,11 @@ message GetPatchContentResponse {
 
 message QueryPatchesRequest {
     repeated string patchIDs = 1;
-    repeated string authors = 2;
-    repeated string devices = 3;
-    int64 after = 4;
-    int64 before = 5;
+    repeated string projects = 2;
+    repeated string authors = 3;
+    repeated string devices = 4;
+    int64 after = 5;
+    int64 before = 6;
 }
 
 message QueryPatchesResponse {
@@ -85,8 +88,9 @@ message QueryPatchesResponse {
 
 message Patch {
     string id = 1;
-    bool applied = 2;
-    string author = 3;
-    string device = 4;
-    int64 createdAt = 5;
+    string project = 2;
+    bool applied = 3;
+    string author = 4;
+    string device = 5;
+    int64 createdAt = 6;
 }

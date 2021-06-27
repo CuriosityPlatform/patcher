@@ -7,12 +7,14 @@ import (
 )
 
 type PatchID uuid.UUID
+type Project string
 type PatchContent []byte
 type PatchAuthor string
 type Device string
 
 type Patch struct {
 	ID      PatchID
+	Project Project
 	Applied bool
 	// empty string if you use PatchRepository.Find
 	Content   PatchContent

@@ -21,7 +21,7 @@ type patchRepository struct {
 }
 
 func (repo *patchRepository) Find(id app.PatchID) (app.Patch, error) {
-	const selectSQL = `SELECT patch_id, applied, author, device, created_at FROM patch WHERE patch_id = ?`
+	const selectSQL = `SELECT patch_id, project, applied, author, device, created_at FROM patch WHERE patch_id = ?`
 
 	binaryID, err := uuid.UUID(id).MarshalBinary()
 	if err != nil {
@@ -40,6 +40,7 @@ func (repo *patchRepository) Find(id app.PatchID) (app.Patch, error) {
 
 	return app.Patch{
 		ID:        app.PatchID(patch.ID),
+		Project:   app.Project(patch.Project),
 		Applied:   patch.Applied,
 		Author:    app.PatchAuthor(patch.Author),
 		Device:    app.Device(patch.Device),
@@ -49,9 +50,9 @@ func (repo *patchRepository) Find(id app.PatchID) (app.Patch, error) {
 
 func (repo *patchRepository) Store(patch app.Patch) error {
 	insertSQL := `
-		INSERT INTO patch (patch_id, applied, content, author, device, created_at) VALUES(?, ?, ?, ?, ?, ?)
+		INSERT INTO patch (patch_id, project, applied, content, author, device, created_at) VALUES(?, ?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY 
-		UPDATE patch_id=VALUES(patch_id), applied=VALUES(applied), %s, author=VALUES(author), device=VALUES(device), created_at=VALUES(created_at)
+		UPDATE patch_id=VALUES(patch_id), project=VALUES(project), applied=VALUES(applied), %s, author=VALUES(author), device=VALUES(device), created_at=VALUES(created_at)
 	`
 
 	if patch.CreatedAt == nil {
@@ -70,6 +71,7 @@ func (repo *patchRepository) Store(patch app.Patch) error {
 		_, err = repo.client.Exec(
 			insertSQL,
 			binaryUUID,
+			patch.Project,
 			patch.Applied,
 			patch.Content,
 			patch.Author,
@@ -82,6 +84,7 @@ func (repo *patchRepository) Store(patch app.Patch) error {
 		_, err = repo.client.Exec(
 			insertSQL,
 			binaryUUID,
+			patch.Project,
 			patch.Applied,
 			"",
 			patch.Author,
@@ -99,6 +102,7 @@ func (repo *patchRepository) Store(patch app.Patch) error {
 
 type patchSqlx struct {
 	ID        uuid.UUID `db:"patch_id"`
+	Project   string    `db:"project"`
 	Applied   bool      `db:"applied"`
 	Author    string    `db:"author"`
 	Device    string    `db:"device"`

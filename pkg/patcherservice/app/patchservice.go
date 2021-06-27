@@ -18,7 +18,7 @@ var (
 )
 
 type PatchService interface {
-	AddPatch(author, device string, content []byte) error
+	AddPatch(project, author, device string, content []byte) error
 	ApplyPatch(id PatchID) error
 }
 
@@ -30,7 +30,7 @@ type patchService struct {
 	unitOfWorkFactory UnitOfWorkFactory
 }
 
-func (service *patchService) AddPatch(author, device string, content []byte) error {
+func (service *patchService) AddPatch(project, author, device string, content []byte) error {
 	if len(content) == 0 {
 		return ErrPatchCantAddPatchWitEmptyContent
 	}
@@ -39,6 +39,7 @@ func (service *patchService) AddPatch(author, device string, content []byte) err
 		repo := provider.PatchRepository()
 		return repo.Store(Patch{
 			ID:      PatchID(uuid.New()),
+			Project: Project(project),
 			Applied: false,
 			Content: content,
 			Author:  PatchAuthor(author),

@@ -21,7 +21,7 @@ type patcherServer struct {
 func (server *patcherServer) AddPatch(ctx context.Context, req *api.AddPatchRequest) (*emptypb.Empty, error) {
 	patchService := server.container.PatchService()
 
-	err := patchService.AddPatch(req.Author, req.Device, []byte(req.PatchContent))
+	err := patchService.AddPatch(req.Project, req.Author, req.Device, []byte(req.PatchContent))
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +95,7 @@ func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPat
 
 	spec := app.PatchSpecification{
 		PatchIDS:    patchIDs,
+		Projects:    stringsToProjects(req.Projects),
 		Authors:     stringsToPatchAuthors(req.Authors),
 		Devices:     stringsToDevices(req.Devices),
 		ShowApplied: &showApplied,
@@ -112,6 +113,7 @@ func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPat
 	for _, patch := range patches {
 		result = append(result, &api.Patch{
 			Id:        uuid.UUID(patch.ID).String(),
+			Project:   string(patch.Project),
 			Applied:   patch.Applied,
 			Author:    string(patch.Author),
 			Device:    string(patch.Device),
@@ -147,6 +149,14 @@ func stringsToDevices(authors []string) []app.Device {
 	result := make([]app.Device, 0, len(authors))
 	for _, author := range authors {
 		result = append(result, app.Device(author))
+	}
+	return result
+}
+
+func stringsToProjects(authors []string) []app.Project {
+	result := make([]app.Project, 0, len(authors))
+	for _, author := range authors {
+		result = append(result, app.Project(author))
 	}
 	return result
 }

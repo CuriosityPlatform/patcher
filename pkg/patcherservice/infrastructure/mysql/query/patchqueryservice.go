@@ -23,7 +23,7 @@ type patchQueryService struct {
 }
 
 func (service *patchQueryService) GetPatch(id app.PatchID) (app.Patch, error) {
-	const selectSQL = `SELECT patch_id, applied, author, device, created_at FROM patch WHERE patch_id = ?`
+	const selectSQL = `SELECT patch_id, project, applied, author, device, created_at FROM patch WHERE patch_id = ?`
 
 	binaryID, err := uuid.UUID(id).MarshalBinary()
 	if err != nil {
@@ -69,7 +69,7 @@ func (service *patchQueryService) GetPatchContent(id app.PatchID) (app.PatchCont
 
 //nolint:exportloopref
 func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app.Patch, error) {
-	selectSQL := `SELECT patch_id, applied, author, device, created_at FROM patch`
+	selectSQL := `SELECT patch_id, project, applied, author, device, created_at FROM patch`
 
 	conditions, args, err := getWhereConditionsBySpec(spec)
 	if err != nil {
@@ -95,6 +95,7 @@ func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app
 	for _, patch := range patches {
 		result = append(result, app.Patch{
 			ID:        app.PatchID(patch.ID),
+			Project:   app.Project(patch.Project),
 			Applied:   patch.Applied,
 			Author:    app.PatchAuthor(patch.Author),
 			Device:    app.Device(patch.Device),
@@ -116,6 +117,17 @@ func getWhereConditionsBySpec(spec app.PatchSpecification) (string, []interface{
 			return "", nil, errors.WithStack(err)
 		}
 		sqlQuery, args, err := sqlx.In(`patch_id IN (?)`, ids)
+		if err != nil {
+			return "", nil, errors.WithStack(err)
+		}
+		conditions = append(conditions, sqlQuery)
+		for _, arg := range args {
+			params = append(params, arg)
+		}
+	}
+
+	if len(spec.Projects) != 0 {
+		sqlQuery, args, err := sqlx.In(`project IN (?)`, spec.Projects)
 		if err != nil {
 			return "", nil, errors.WithStack(err)
 		}
@@ -163,7 +175,6 @@ func getWhereConditionsBySpec(spec app.PatchSpecification) (string, []interface{
 		if *spec.ShowApplied {
 			intApplied = 1
 		}
-		fmt.Println("RES", intApplied)
 		params = append(params, intApplied)
 	}
 
@@ -184,6 +195,7 @@ func patchIDsToBinaryUUIDs(uuids []app.PatchID) ([][]byte, error) {
 
 type patchSqlx struct {
 	ID        uuid.UUID `db:"patch_id"`
+	Project   string    `db:"project"`
 	Applied   bool      `db:"applied"`
 	Author    string    `db:"author"`
 	Device    string    `db:"device"`

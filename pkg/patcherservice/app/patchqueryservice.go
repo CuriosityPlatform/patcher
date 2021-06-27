@@ -4,6 +4,7 @@ import "time"
 
 type PatchSpecification struct {
 	PatchIDS    []PatchID
+	Projects    []Project
 	Authors     []PatchAuthor
 	Devices     []Device
 	After       *time.Time
