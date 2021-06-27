@@ -1,8 +1,6 @@
 package transport
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -88,7 +86,7 @@ func (server *patcherServer) GetPatchContent(ctx context.Context, req *api.GetPa
 }
 
 func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPatchesRequest) (*api.QueryPatchesResponse, error) {
-	//showApplied := false
+	showApplied := false
 
 	patchIDs, err := stringsToPatchIDs(req.PatchIDs)
 	if err != nil {
@@ -96,10 +94,10 @@ func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPat
 	}
 
 	spec := app.PatchSpecification{
-		PatchIDS: patchIDs,
-		Authors:  stringsToPatchAuthors(req.Authors),
-		Devices:  stringsToDevices(req.Devices),
-		//ShowApplied: &showApplied,
+		PatchIDS:    patchIDs,
+		Authors:     stringsToPatchAuthors(req.Authors),
+		Devices:     stringsToDevices(req.Devices),
+		ShowApplied: &showApplied,
 	}
 
 	patchQueryService := server.container.PatchQueryService()
@@ -108,8 +106,6 @@ func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPat
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("patches", len(patches))
 
 	result := make([]*api.Patch, 0, len(patches))
 

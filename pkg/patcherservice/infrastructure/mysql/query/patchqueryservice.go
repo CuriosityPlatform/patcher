@@ -67,6 +67,7 @@ func (service *patchQueryService) GetPatchContent(id app.PatchID) (app.PatchCont
 	return patchContent, nil
 }
 
+//nolint:exportloopref
 func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app.Patch, error) {
 	selectSQL := `SELECT patch_id, applied, author, device, created_at FROM patch`
 
@@ -159,9 +160,10 @@ func getWhereConditionsBySpec(spec app.PatchSpecification) (string, []interface{
 	if spec.ShowApplied != nil {
 		conditions = append(conditions, "applied = ?")
 		intApplied := 0
-		if !*spec.ShowApplied {
+		if *spec.ShowApplied {
 			intApplied = 1
 		}
+		fmt.Println("RES", intApplied)
 		params = append(params, intApplied)
 	}
 
