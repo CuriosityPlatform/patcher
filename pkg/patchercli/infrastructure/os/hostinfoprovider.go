@@ -1,6 +1,10 @@
 package os
 
-import "patcher/pkg/common/infrastructure/executor"
+import (
+	"strings"
+
+	"patcher/pkg/common/infrastructure/executor"
+)
 
 type HostInfoProvider interface {
 	Username() (string, error)
@@ -25,7 +29,7 @@ func (provider *hostInfoProvider) Username() (string, error) {
 		return "", err
 	}
 
-	return string(usernameBytes), nil
+	return strings.Trim(string(usernameBytes), "\n"), nil
 }
 
 func (provider *hostInfoProvider) DeviceName() (string, error) {
@@ -39,5 +43,5 @@ func (provider *hostInfoProvider) DeviceName() (string, error) {
 		return "", err
 	}
 
-	return string(hostnameBytes), nil
+	return strings.Trim(string(hostnameBytes), "\n"), nil
 }

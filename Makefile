@@ -3,7 +3,7 @@ export APP_CLI_CMD_NAME = patchercli
 export REGISTRY = vadimmakerov/curiosity
 export APP_PROTO_FILES = \
 	api/patcher/patcher.proto
-export DOCKER_IMAGE_NAME = $(REGISTRY)-$(APP_CMD_NAME):master
+export DOCKER_IMAGE_NAME = $(REGISTRY)-$(APP_SERVICE_CMD_NAME):master
 
 all: build test check
 

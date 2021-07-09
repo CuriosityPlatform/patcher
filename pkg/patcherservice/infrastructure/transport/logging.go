@@ -17,6 +17,12 @@ func NewLoggingMiddleware(h http.Handler, logger log.Logger) http.Handler {
 		now := time.Now()
 		h.ServeHTTP(writer, request)
 
+		const apiPrefix = "/api"
+
+		if request.URL != nil && strings.HasPrefix(request.URL.RequestURI(), apiPrefix) {
+			return
+		}
+
 		logger.WithFields(log.Fields{
 			"duration": time.Since(now),
 			"method":   request.Method,
