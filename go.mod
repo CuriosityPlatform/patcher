@@ -12,6 +12,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
+	github.com/urfave/cli v1.22.1
 	golang.org/x/net v0.0.0-20201029221708-28c70e62bb1d
 	google.golang.org/genproto v0.0.0-20201030142918-24207fddd1c3
 	google.golang.org/grpc v1.36.1

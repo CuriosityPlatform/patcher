@@ -1,4 +1,5 @@
-export APP_CMD_NAME = patcherservice
+export APP_SERVICE_CMD_NAME = patcherservice
+export APP_CLI_CMD_NAME = patchercli
 export REGISTRY = vadimmakerov/curiosity
 export APP_PROTO_FILES = \
 	api/patcher/patcher.proto
@@ -8,7 +9,8 @@ all: build test check
 
 .PHONY: build
 build: modules
-	bin/go-build.sh "cmd/$(APP_CMD_NAME)" "bin/$(APP_CMD_NAME)" $(APP_CMD_NAME) .env
+	bin/go-build.sh "cmd/$(APP_SERVICE_CMD_NAME)" "bin/$(APP_SERVICE_CMD_NAME)" $(APP_SERVICE_CMD_NAME) .env
+	bin/go-build.sh "cmd/$(APP_CLI_CMD_NAME)" "bin/$(APP_CLI_CMD_NAME)" $(APP_CLI_CMD_NAME) .env
 
 .PHONY: generate
 generate:
