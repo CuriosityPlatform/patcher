@@ -44,6 +44,12 @@ func runApp(args []string) error {
 				Name:        "push",
 				Description: "Push current patch to server",
 				Action:      executePush,
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "no-reset",
+						Usage: "do not clear work catalog",
+					},
+				},
 			},
 			{
 				Name:        "ping",

@@ -16,8 +16,12 @@ type ApplyPatchParam struct {
 	WithApply bool
 }
 
+type PushCurrentChangesParam struct {
+	NoReset bool
+}
+
 type ProjectService interface {
 	InitializeProject(configsDir string) (string, error)
 	ApplyPatch(param ApplyPatchParam) error
-	PushCurrentChanges() error
+	PushCurrentChanges(param PushCurrentChangesParam) error
 }

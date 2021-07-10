@@ -83,7 +83,7 @@ func (service *projectService) ApplyPatch(param app.ApplyPatchParam) error {
 	return nil
 }
 
-func (service *projectService) PushCurrentChanges() error {
+func (service *projectService) PushCurrentChanges(param app.PushCurrentChangesParam) error {
 	changedFiles, err := service.repoManager.ListChangedFiles()
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (service *projectService) PushCurrentChanges() error {
 		}
 	}
 
-	changes, err := service.repoManager.GetCurrentChanges(true)
+	changes, err := service.repoManager.GetCurrentChanges(false)
 	if err != nil {
 		return err
 	}
@@ -144,6 +144,16 @@ func (service *projectService) PushCurrentChanges() error {
 	}
 
 	service.reporter.Info("Patch sent ✅")
+
+	if !param.NoReset {
+		err = service.repoManager.HardReset()
+		if err != nil {
+			return err
+		}
+
+		service.reporter.Info("Work catalog cleared ✅")
+	}
+
 	return nil
 }
 

@@ -24,6 +24,7 @@ type RepoManager interface {
 	Fetch() error
 	FetchAll() error
 	ApplyPatch(patchContent []byte) error
+	HardReset() error
 
 	RemoteBranches() ([]string, error)
 	// ListChangedFiles returns slice of changed files
@@ -55,6 +56,10 @@ func (repo *repoManager) FetchAll() error {
 
 func (repo *repoManager) ApplyPatch(patchContent []byte) error {
 	return repo.runWithOpts([]string{"apply"}, executor.WithStdin(bytes.NewBuffer(patchContent)))
+}
+
+func (repo *repoManager) HardReset() error {
+	return repo.runWithOpts([]string{"reset", "--hard"})
 }
 
 //nolint:prealloc

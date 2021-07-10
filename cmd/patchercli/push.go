@@ -11,6 +11,7 @@ import (
 
 	"patcher/api/patcher"
 	"patcher/pkg/common/infrastructure/git"
+	"patcher/pkg/patchercli/app"
 	"patcher/pkg/patchercli/infrastructure/os"
 	"patcher/pkg/patchercli/infrastructure/service"
 )
@@ -40,7 +41,9 @@ func executePush(ctx *cli.Context) error {
 		initReporter(ctx),
 	)
 
-	return projectService.PushCurrentChanges()
+	return projectService.PushCurrentChanges(app.PushCurrentChangesParam{
+		NoReset: ctx.Bool("no-reset"),
+	})
 }
 
 func initServiceClient(config *config) (patcher.PatcherServiceClient, error) {
