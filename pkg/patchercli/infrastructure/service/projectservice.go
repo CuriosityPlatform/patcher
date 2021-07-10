@@ -42,6 +42,47 @@ func (service *projectService) InitializeProject(configsDir string) (string, err
 	panic("implement me")
 }
 
+func (service *projectService) ApplyPatch(param app.ApplyPatchParam) error {
+	projectName, err := service.repoManager.RemoteProjectName()
+	if err != nil {
+		return err
+	}
+
+	if param.PatchID == nil {
+		id, err2 := service.fetchOnePatchForProject(projectName)
+		if err2 != nil {
+			return err2
+		}
+
+		param.PatchID = &id
+	}
+
+	patchContentResp, err := service.patcherClient.GetPatchContent(context.Background(), &patcher.GetPatchContentRequest{
+		PatchID: string(*param.PatchID),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = service.repoManager.ApplyPatch([]byte(patchContentResp.Content))
+	if err != nil {
+		return err
+	}
+
+	if param.WithApply {
+		_, err = service.patcherClient.ApplyPatch(context.Background(), &patcher.ApplyPatchRequest{
+			PatchID: string(*param.PatchID),
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	service.reporter.Info(fmt.Sprintf("Patch with id %s applied ✅", *param.PatchID))
+
+	return nil
+}
+
 func (service *projectService) PushCurrentChanges() error {
 	changedFiles, err := service.repoManager.ListChangedFiles()
 	if err != nil {
@@ -98,5 +139,29 @@ func (service *projectService) PushCurrentChanges() error {
 		PatchContent: string(changes),
 	})
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	service.reporter.Info("Patch sent ✅")
+	return nil
+}
+
+func (service projectService) fetchOnePatchForProject(projectName string) (app.PatchID, error) {
+	resp, err := service.patcherClient.QueryPatches(context.Background(), &patcher.QueryPatchesRequest{
+		Projects: []string{projectName},
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if len(resp.Patches) == 0 {
+		return "", app.ErrNoPatchesForProject
+	}
+
+	if len(resp.Patches) != 1 {
+		return "", app.ErrTooManyPatchesForProject
+	}
+
+	return app.PatchID(resp.Patches[0].Id), nil
 }

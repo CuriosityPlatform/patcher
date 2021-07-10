@@ -1,11 +1,14 @@
 package git
 
 import (
+	"bytes"
 	"math"
 	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
+
+	"patcher/pkg/common/infrastructure/executor"
 )
 
 func NewRepoManager(repoPath string, gitExecutor Executor) RepoManager {
@@ -20,6 +23,8 @@ type RepoManager interface {
 	ForceCheckout(branch string) error
 	Fetch() error
 	FetchAll() error
+	ApplyPatch(patchContent []byte) error
+
 	RemoteBranches() ([]string, error)
 	// ListChangedFiles returns slice of changed files
 	ListChangedFiles() ([]string, error)
@@ -46,6 +51,10 @@ func (repo *repoManager) Fetch() error {
 
 func (repo *repoManager) FetchAll() error {
 	return repo.run("fetch", "--all")
+}
+
+func (repo *repoManager) ApplyPatch(patchContent []byte) error {
+	return repo.runWithOpts([]string{"apply"}, executor.WithStdin(bytes.NewBuffer(patchContent)))
 }
 
 //nolint:prealloc
@@ -133,4 +142,9 @@ func (repo *repoManager) run(args ...string) error {
 func (repo *repoManager) output(args ...string) ([]byte, error) {
 	output, err := repo.executor.OutputWithWorkDir(repo.repoPath, args...)
 	return output, err
+}
+
+func (repo repoManager) runWithOpts(args []string, opts ...executor.Opt) error {
+	opts = append(opts, executor.WithWorkdir(repo.repoPath))
+	return repo.executor.RunWithOpts(args, opts...)
 }

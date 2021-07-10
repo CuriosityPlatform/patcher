@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"patcher/pkg/common/infrastructure/reporter"
 )
@@ -33,7 +33,7 @@ func runApp(args []string) error {
 				Name: "quiet",
 			},
 		},
-		Commands: []cli.Command{
+		Commands: []*cli.Command{
 			{
 				Name:        "init",
 				Description: "Initialize synchronization config for project",
@@ -49,6 +49,23 @@ func runApp(args []string) error {
 				Name:        "ping",
 				Description: "Ping connection to remote service",
 				Action:      executePing,
+			},
+			{
+				Name:        "apply",
+				Description: "Apply patch for current project",
+				Action:      executeApply,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "patch",
+						Aliases: []string{
+							"p",
+						},
+					},
+					&cli.BoolFlag{
+						Name:  "no-apply",
+						Value: true,
+					},
+				},
 			},
 		},
 	}

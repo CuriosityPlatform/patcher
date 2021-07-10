@@ -8,6 +8,7 @@ type Executor interface {
 	OutputWithWorkDir(workDir string, args ...string) ([]byte, error)
 	Run(args ...string) error
 	RunWithWorkDir(workDir string, args ...string) error
+	RunWithOpts(args []string, opts ...Opt) error
 }
 
 func New(executable string) (Executor, error) {
@@ -42,5 +43,13 @@ func (e *executor) Run(args ...string) error {
 func (e *executor) RunWithWorkDir(workDir string, args ...string) error {
 	cmd := exec.Command(e.executable, args...)
 	cmd.Dir = workDir
+	return cmd.Run()
+}
+
+func (e *executor) RunWithOpts(args []string, opts ...Opt) error {
+	cmd := exec.Command(e.executable, args...)
+	for _, opt := range opts {
+		opt.apply(cmd)
+	}
 	return cmd.Run()
 }

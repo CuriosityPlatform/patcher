@@ -1,6 +1,6 @@
 package main
 
-import "github.com/urfave/cli"
+import "github.com/urfave/cli/v2"
 
 func executePing(ctx *cli.Context) error {
 	config, err := parseConfig()
