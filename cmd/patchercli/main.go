@@ -52,6 +52,31 @@ func runApp(args []string) error {
 				},
 			},
 			{
+				Name:        "query",
+				Description: "Query remote service for patches",
+				Action:      executeQuery,
+				Flags: []cli.Flag{
+					&cli.StringSliceFlag{
+						Name:        "project",
+						Aliases:     []string{"p"},
+						Usage:       "query by project",
+						DefaultText: "project",
+					},
+					&cli.StringSliceFlag{
+						Name:        "author",
+						Aliases:     []string{"a"},
+						Usage:       "query by author",
+						DefaultText: "author",
+					},
+					&cli.StringSliceFlag{
+						Name:        "device",
+						Aliases:     []string{"d"},
+						Usage:       "query by device",
+						DefaultText: "device",
+					},
+				},
+			},
+			{
 				Name:        "ping",
 				Description: "Ping connection to remote service",
 				Action:      executePing,

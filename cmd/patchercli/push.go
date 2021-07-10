@@ -1,13 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 
 	"patcher/api/patcher"
 	"patcher/pkg/common/infrastructure/git"
@@ -52,23 +47,5 @@ func initServiceClient(config *config) (patcher.PatcherServiceClient, error) {
 		return nil, err
 	}
 
-	err = waitForConnectionReady(conn)
-	if err != nil {
-		return nil, err
-	}
-
 	return patcher.NewPatcherServiceClient(conn), nil
-}
-
-func waitForConnectionReady(conn *grpc.ClientConn) error {
-	const retries = 2
-
-	for i := 0; i < retries; i++ {
-		if conn.GetState() == connectivity.Ready {
-			return nil
-		}
-		time.Sleep(time.Second)
-	}
-
-	return errors.New(fmt.Sprintf("failed to wait service %s", conn.Target()))
 }
