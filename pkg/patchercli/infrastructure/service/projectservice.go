@@ -137,6 +137,7 @@ func (service *projectService) PushCurrentChanges(param app.PushCurrentChangesPa
 		Author:       username,
 		Device:       deviceName,
 		PatchContent: string(changes),
+		Message:      param.Message,
 	})
 
 	if err != nil {

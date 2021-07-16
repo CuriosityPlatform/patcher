@@ -17,6 +17,7 @@ type ApplyPatchParam struct {
 }
 
 type PushCurrentChangesParam struct {
+	Message string
 	NoReset bool
 }
 

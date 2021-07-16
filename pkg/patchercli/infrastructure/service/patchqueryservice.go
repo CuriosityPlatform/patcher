@@ -35,6 +35,7 @@ func (service *patchQueryService) Query(spec app.PatchSpec) ([]app.Patch, error)
 		result = append(result, app.Patch{
 			ID:        app.PatchID(patch.Id),
 			Project:   patch.Project,
+			Message:   patch.Message,
 			Applied:   patch.Applied,
 			Author:    patch.Author,
 			Device:    patch.Device,

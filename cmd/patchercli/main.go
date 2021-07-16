@@ -49,6 +49,11 @@ func runApp(args []string) error {
 						Name:  "no-reset",
 						Usage: "do not clear work catalog",
 					},
+					&cli.StringFlag{
+						Name:    "message",
+						Aliases: []string{"m"},
+						Usage:   "patch message",
+					},
 				},
 			},
 			{

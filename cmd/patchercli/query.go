@@ -52,12 +52,14 @@ func executeQuery(ctx *cli.Context) error {
 		fmt.Println(fmt.Sprintf(
 			"ID : %s\n"+
 				"Project: %s\n"+
+				"Message: %s\n"+
 				"IsApplied: %v\n"+
 				"Author : %s\n"+
 				"Device : %s\n"+
 				"Created at : %s",
 			patch.ID,
 			patch.Project,
+			patch.Message,
 			patch.Applied,
 			patch.Author,
 			patch.Device,

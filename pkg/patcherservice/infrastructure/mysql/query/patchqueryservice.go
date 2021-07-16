@@ -23,7 +23,7 @@ type patchQueryService struct {
 }
 
 func (service *patchQueryService) GetPatch(id app.PatchID) (app.Patch, error) {
-	const selectSQL = `SELECT patch_id, project, applied, author, device, created_at FROM patch WHERE patch_id = ?`
+	const selectSQL = `SELECT patch_id, project, message, applied, author, device, created_at FROM patch WHERE patch_id = ?`
 
 	binaryID, err := uuid.UUID(id).MarshalBinary()
 	if err != nil {
@@ -42,6 +42,8 @@ func (service *patchQueryService) GetPatch(id app.PatchID) (app.Patch, error) {
 
 	return app.Patch{
 		ID:        app.PatchID(patch.ID),
+		Project:   app.Project(patch.Project),
+		Message:   patch.Message,
 		Applied:   patch.Applied,
 		Author:    app.PatchAuthor(patch.Author),
 		Device:    app.Device(patch.Device),
@@ -69,7 +71,7 @@ func (service *patchQueryService) GetPatchContent(id app.PatchID) (app.PatchCont
 
 //nolint:exportloopref
 func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app.Patch, error) {
-	selectSQL := `SELECT patch_id, project, applied, author, device, created_at FROM patch`
+	selectSQL := `SELECT patch_id, project, message, applied, author, device, created_at FROM patch`
 
 	conditions, args, err := getWhereConditionsBySpec(spec)
 	if err != nil {
@@ -97,6 +99,7 @@ func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app
 		result = append(result, app.Patch{
 			ID:        app.PatchID(patch.ID),
 			Project:   app.Project(patch.Project),
+			Message:   patch.Message,
 			Applied:   patch.Applied,
 			Author:    app.PatchAuthor(patch.Author),
 			Device:    app.Device(patch.Device),
@@ -197,6 +200,7 @@ func patchIDsToBinaryUUIDs(uuids []app.PatchID) ([][]byte, error) {
 type patchSqlx struct {
 	ID        uuid.UUID `db:"patch_id"`
 	Project   string    `db:"project"`
+	Message   []byte    `db:"message"`
 	Applied   bool      `db:"applied"`
 	Author    string    `db:"author"`
 	Device    string    `db:"device"`

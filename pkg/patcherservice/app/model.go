@@ -8,6 +8,7 @@ import (
 
 type PatchID uuid.UUID
 type Project string
+type Message []byte
 type PatchContent []byte
 type PatchAuthor string
 type Device string
@@ -15,6 +16,7 @@ type Device string
 type Patch struct {
 	ID      PatchID
 	Project Project
+	Message Message
 	Applied bool
 	// empty string if you use PatchRepository.Find
 	Content   PatchContent

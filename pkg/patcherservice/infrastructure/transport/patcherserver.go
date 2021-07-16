@@ -21,7 +21,7 @@ type patcherServer struct {
 func (server *patcherServer) AddPatch(ctx context.Context, req *api.AddPatchRequest) (*emptypb.Empty, error) {
 	patchService := server.container.PatchService()
 
-	err := patchService.AddPatch(req.Project, req.Author, req.Device, []byte(req.PatchContent))
+	err := patchService.AddPatch(req.Project, req.Author, req.Device, []byte(req.Message), []byte(req.PatchContent))
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +61,7 @@ func (server *patcherServer) GetPatch(ctx context.Context, req *api.GetPatchRequ
 	return &api.GetPatchResponse{
 		Id:        uuid.UUID(patch.ID).String(),
 		Applied:   patch.Applied,
+		Message:   string(patch.Message),
 		Author:    string(patch.Author),
 		Device:    string(patch.Device),
 		CreatedAt: patch.CreatedAt.Unix(),
@@ -114,6 +115,7 @@ func (server *patcherServer) QueryPatches(ctx context.Context, req *api.QueryPat
 		result = append(result, &api.Patch{
 			Id:        uuid.UUID(patch.ID).String(),
 			Project:   string(patch.Project),
+			Message:   string(patch.Message),
 			Applied:   patch.Applied,
 			Author:    string(patch.Author),
 			Device:    string(patch.Device),

@@ -11,6 +11,7 @@ type PatchSpec struct {
 type Patch struct {
 	ID        PatchID
 	Project   string
+	Message   string
 	Applied   bool
 	Author    string
 	Device    string

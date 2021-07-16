@@ -38,6 +38,7 @@ func executePush(ctx *cli.Context) error {
 
 	return projectService.PushCurrentChanges(app.PushCurrentChangesParam{
 		NoReset: ctx.Bool("no-reset"),
+		Message: ctx.String("message"),
 	})
 }
 
