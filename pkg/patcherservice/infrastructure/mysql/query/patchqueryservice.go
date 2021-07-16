@@ -93,13 +93,14 @@ func (service *patchQueryService) GetPatches(spec app.PatchSpecification) ([]app
 	result := make([]app.Patch, 0, len(patches))
 
 	for _, patch := range patches {
+		createdAt := patch.CreatedAt
 		result = append(result, app.Patch{
 			ID:        app.PatchID(patch.ID),
 			Project:   app.Project(patch.Project),
 			Applied:   patch.Applied,
 			Author:    app.PatchAuthor(patch.Author),
 			Device:    app.Device(patch.Device),
-			CreatedAt: &patch.CreatedAt,
+			CreatedAt: &createdAt,
 		})
 	}
 

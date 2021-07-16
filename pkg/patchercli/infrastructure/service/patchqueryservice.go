@@ -31,7 +31,7 @@ func (service *patchQueryService) Query(spec app.PatchSpec) ([]app.Patch, error)
 	result := make([]app.Patch, 0, len(resp.Patches))
 
 	for _, patch := range resp.Patches {
-		unixTime := time.Unix(0, patch.CreatedAt)
+		unixTime := time.Unix(patch.CreatedAt, 0)
 		result = append(result, app.Patch{
 			ID:        app.PatchID(patch.Id),
 			Project:   patch.Project,

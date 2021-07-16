@@ -54,12 +54,14 @@ func executeQuery(ctx *cli.Context) error {
 				"Project: %s\n"+
 				"IsApplied: %v\n"+
 				"Author : %s\n"+
-				"Device : %s",
+				"Device : %s\n"+
+				"Created at : %s",
 			patch.ID,
 			patch.Project,
 			patch.Applied,
 			patch.Author,
 			patch.Device,
+			patch.CreatedAt.Format("2006-01-02 15:04:05"),
 		))
 		if i != len(patches)-1 {
 			fmt.Println()
