@@ -2,11 +2,10 @@ package main
 
 import (
 	"github.com/urfave/cli/v2"
-	"google.golang.org/grpc"
 
-	"patcher/api/patcher"
 	"patcher/pkg/common/infrastructure/git"
 	"patcher/pkg/patchercli/app"
+	"patcher/pkg/patchercli/infrastructure"
 	"patcher/pkg/patchercli/infrastructure/os"
 	"patcher/pkg/patchercli/infrastructure/service"
 )
@@ -24,7 +23,12 @@ func executePush(ctx *cli.Context) error {
 
 	repoManager := git.NewRepoManager(".", executor)
 
-	client, err := initServiceClient(config)
+	container := infrastructure.NewDependencyContainer(infrastructure.DependenciesConfig{
+		PatcherServiceAddress: config.PatcherServiceAddress,
+		SigningKey:            config.SigningKey,
+	})
+
+	client, err := container.PatcherClient()
 	if err != nil {
 		return err
 	}
@@ -40,13 +44,4 @@ func executePush(ctx *cli.Context) error {
 		NoReset: ctx.Bool("no-reset"),
 		Message: ctx.String("message"),
 	})
-}
-
-func initServiceClient(config *config) (patcher.PatcherServiceClient, error) {
-	conn, err := grpc.Dial(config.PatcherServiceAddress, grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
-	return patcher.NewPatcherServiceClient(conn), nil
 }

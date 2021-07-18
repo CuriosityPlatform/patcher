@@ -20,4 +20,5 @@ func parseConfig() (*config, error) {
 type config struct {
 	ConfigDir             string `envconfig:"config_dir"`
 	PatcherServiceAddress string `envconfig:"patcher_service_address"`
+	SigningKey            string
 }

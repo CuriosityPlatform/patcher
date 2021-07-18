@@ -30,7 +30,9 @@ func runApp(args []string) error {
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name: "quiet",
+				Name:    "quiet",
+				Aliases: []string{"q"},
+				Usage:   "no output",
 			},
 		},
 		Commands: []*cli.Command{

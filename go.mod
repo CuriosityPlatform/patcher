@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/CuriosityMusicStreaming/ComponentsPool v1.0.8
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang/protobuf v1.5.0
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.7.4

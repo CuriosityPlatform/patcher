@@ -20,6 +20,7 @@ import (
 
 	patcherapi "patcher/api/patcher"
 	migrationsembedder "patcher/data/mysql"
+	"patcher/pkg/common/infrastructure/auth"
 	"patcher/pkg/patcherservice/infrastructure"
 	"patcher/pkg/patcherservice/infrastructure/transport"
 )
@@ -78,7 +79,9 @@ func runService(config *config, logger log.MainLogger) error {
 	serviceAPI := transport.NewPatcherServer(container)
 	serverHub := server.NewHub(stopChan)
 
-	baseServer := grpc.NewServer(grpc.UnaryInterceptor(makeGRPCUnaryInterceptor(logger)))
+	tokenManager := auth.NewJwtTokenManager([]byte(config.TokenSecretKey), time.Minute)
+
+	baseServer := grpc.NewServer(grpc.UnaryInterceptor(makeGRPCUnaryInterceptor(logger, tokenManager)))
 	patcherapi.RegisterPatcherServiceServer(baseServer, serviceAPI)
 
 	serverHub.AddServer(server.NewGrpcServer(
@@ -140,10 +143,9 @@ func listenForKillSignal(stopChan chan<- struct{}) {
 	}()
 }
 
-func makeGRPCUnaryInterceptor(logger log.Logger) grpc.UnaryServerInterceptor {
-	loggerInterceptor := transport.NewLoggerServerInterceptor(logger)
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		resp, err = loggerInterceptor(ctx, req, info, handler)
-		return resp, err
-	}
+func makeGRPCUnaryInterceptor(logger log.Logger, manager auth.TokenManager) grpc.UnaryServerInterceptor {
+	return transport.NewCompositeInterceptor(
+		logger,
+		transport.NewAuthorizationMiddleware(manager),
+	)
 }

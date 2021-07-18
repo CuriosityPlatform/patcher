@@ -23,4 +23,6 @@ type config struct {
 	DatabaseName     string `envconfig:"db_name" default:"patcher"`
 
 	MaxDatabaseConnections int `envconfig:"max_connections" default:"10"`
+
+	TokenSecretKey string `envconfig:"token_secret_key"`
 }

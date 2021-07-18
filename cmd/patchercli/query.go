@@ -7,6 +7,7 @@ import (
 
 	"patcher/pkg/common/infrastructure/git"
 	"patcher/pkg/patchercli/app"
+	"patcher/pkg/patchercli/infrastructure"
 	"patcher/pkg/patchercli/infrastructure/service"
 )
 
@@ -23,7 +24,12 @@ func executeQuery(ctx *cli.Context) error {
 
 	repoManager := git.NewRepoManager(".", executor)
 
-	client, err := initServiceClient(config)
+	container := infrastructure.NewDependencyContainer(infrastructure.DependenciesConfig{
+		PatcherServiceAddress: config.PatcherServiceAddress,
+		SigningKey:            config.SigningKey,
+	})
+
+	client, err := container.PatcherClient()
 	if err != nil {
 		return err
 	}
